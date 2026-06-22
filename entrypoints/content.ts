@@ -1,3 +1,104 @@
+// Where the popup keeps its running "hype removed" tally. The content script
+// increments it; the popup reads (and watches) it. Lives in local storage so
+// each browser profile keeps its own scoreboard.
+const HYPE_KEY = 'local:hypeRemoved';
+
+// A single replacement rule. `has` is a cheap, stateless test used to decide
+// whether a text node is even worth opening; `global` does the real work; and
+// `replace` maps the matched casing onto the replacement.
+type Rule = {
+  has: RegExp;
+  global: RegExp;
+  replace: (match: string) => string;
+};
+
+/**
+ * Build a replacer that mirrors the casing of the match onto a replacement.
+ *  - all-lowercase match ("ai", "gpt") -> lower
+ *  - anything else (incl. ALL CAPS)    -> title
+ * All-caps is deliberately collapsed to title case: the punchline is "it's
+ * just a Calculator", not "it's just a CALCULATOR".
+ */
+function titled(lower: string, title: string): (m: string) => string {
+  return (match) => (match === match.toLowerCase() ? lower : title);
+}
+
+// Order matters: more specific rules must run before rules whose pattern they
+// contain (e.g. ChatGPT before GPT). Each replacement is also chosen so it
+// can't be re-matched by a later rule, so a single forward pass is enough.
+const RULES: Rule[] = [
+  {
+    // The original. "AI" with an optional dot between the letters, so "A.I",
+    // "A.I.", "a.i" are caught too. The lookahead keeps us from grabbing the
+    // start of a longer dotted acronym ("A.I.D.S") and leaves a trailing
+    // sentence period alone ("A.I." -> "Calculator.").
+    has: /\bA\.?I\b(?!\.[A-Za-z])/,
+    global: /\bA\.?I\b(?!\.[A-Za-z])/gi,
+    replace: titled('calculator', 'Calculator'),
+  },
+  {
+    has: /\bchat\s?gpt\b/i,
+    global: /\bchat\s?gpt\b/gi,
+    replace: titled('chat calc', 'Chat Calc'),
+  },
+  {
+    has: /\bagi\b/i,
+    global: /\bagi\b/gi,
+    replace: titled(
+      'artificial general calculator',
+      'Artificial General Calculator',
+    ),
+  },
+  {
+    has: /\bllm\b/i,
+    global: /\bllm\b/gi,
+    replace: titled('large lossy multiplication', 'Large Lossy Multiplication'),
+  },
+  {
+    has: /\bgpt\b/i,
+    global: /\bgpt\b/gi,
+    replace: titled('general purpose toaster', 'General Purpose Toaster'),
+  },
+  {
+    has: /\bmachine\s+learning\b/i,
+    global: /\bmachine\s+learning\b/gi,
+    replace: titled('memorizing', 'Memorizing'),
+  },
+  {
+    has: /\bdeep\s+learning\b/i,
+    global: /\bdeep\s+learning\b/gi,
+    replace: titled('deep guessing', 'Deep Guessing'),
+  },
+  {
+    has: /\bneural\s+networks?\b/i,
+    global: /\bneural\s+networks?\b/gi,
+    replace: (m) => (/s\b/i.test(m) ? 'tangled wires' : 'tangled wire'),
+  },
+  {
+    has: /\bhallucinations?\b/i,
+    global: /\bhallucinations?\b/gi,
+    replace: (m) => (/s\b/i.test(m) ? 'features' : 'feature'),
+  },
+  {
+    has: /\bprompt\s+engineer(?:ing|s)?\b/i,
+    global: /\bprompt\s+engineer(?:ing|s)?\b/gi,
+    replace: (m) =>
+      /ing\b/i.test(m)
+        ? 'wish-making'
+        : /s\b/i.test(m)
+          ? 'wish-makers'
+          : 'wish-maker',
+  },
+  {
+    has: /\bgenerative\b/i,
+    global: /\bgenerative\b/gi,
+    replace: titled('hallucinating', 'Hallucinating'),
+  },
+];
+
+// One quick test for the tree walker: "does this node contain any hype at all?"
+const HAS_HYPE = new RegExp(RULES.map((r) => r.has.source).join('|'), 'i');
+
 export default defineContentScript({
   // Run on every page.
   matches: ['<all_urls>'],
@@ -30,28 +131,6 @@ export default defineContentScript({
       'META',
     ]);
 
-    // "AI" in any casing, with an optional dot between the letters so common
-    // abbreviations like "A.I", "A.I.", "a.i" are caught too. Word boundaries
-    // keep us from matching the "ai" inside "rain", "main", "available", etc.
-    // The negative lookahead `(?!\.[A-Za-z])` stops us from grabbing the "A.I"
-    // that begins a longer dotted acronym such as "A.I.D.S", and also leaves a
-    // trailing sentence period alone ("A.I." -> "Calculator."). Two regexes:
-    // one without /g for cheap membership tests (stateless), one with /g for
-    // the actual replacement.
-    const HAS_AI = /\bA\.?I\b(?!\.[A-Za-z])/i;
-    const AI_GLOBAL = /\bA\.?I\b(?!\.[A-Za-z])/gi;
-
-    /**
-     * Map the matched casing onto the replacement:
-     * - both letters lowercase ("ai", "a.i") -> "calculator"
-     * - any uppercase ("AI", "Ai", "A.I", ...) -> "Calculator"
-     * Dots are dropped; "Calculator" is a word, not an acronym.
-     */
-    function replacementFor(match: string): string {
-      const letters = match.replace(/\./g, '');
-      return letters === letters.toLowerCase() ? 'calculator' : 'Calculator';
-    }
-
     /** True if the element (or an ancestor) is a place we shouldn't edit. */
     function isSkippable(el: Element | null): boolean {
       if (!el) return true;
@@ -60,20 +139,53 @@ export default defineContentScript({
       return false;
     }
 
-    function replaceTextInNode(node: Text): void {
-      const original = node.nodeValue ?? '';
-      const updated = original.replace(AI_GLOBAL, replacementFor);
-      if (updated !== original) node.nodeValue = updated;
+    // --- Hype scoreboard -----------------------------------------------------
+    // Tally replacements in memory and flush to storage on a timer (and on
+    // unload) so we don't round-trip to storage on every text node.
+    let pending = 0;
+    let timer: ReturnType<typeof setInterval> | null = null;
+
+    function flushCount(): void {
+      if (pending === 0) return;
+      const delta = pending;
+      pending = 0;
+      void storage
+        .getItem<number>(HYPE_KEY, { fallback: 0 })
+        .then((cur) => {
+          void storage.setItem(HYPE_KEY, cur + delta);
+        });
     }
 
-    /** Find every text node under `root` that contains a standalone "AI". */
+    function noteReplacements(n: number): void {
+      pending += n;
+      if (timer === null) {
+        timer = setInterval(flushCount, 1500);
+        window.addEventListener('pagehide', flushCount, { once: true });
+      }
+    }
+
+    /** Apply every rule to a single text node; return the # of swaps made. */
+    function replaceTextInNode(node: Text): number {
+      let text = node.nodeValue ?? '';
+      let total = 0;
+      for (const rule of RULES) {
+        text = text.replace(rule.global, (m) => {
+          total++;
+          return rule.replace(m);
+        });
+      }
+      if (total > 0) node.nodeValue = text;
+      return total;
+    }
+
+    /** Find every text node under `root` that contains any hype term. */
     function collectTextNodes(root: Node): Text[] {
       const targets: Text[] = [];
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
         acceptNode(node) {
           const parent = (node as Text).parentElement;
           if (isSkippable(parent)) return NodeFilter.FILTER_REJECT;
-          return HAS_AI.test(node.nodeValue ?? '')
+          return HAS_HYPE.test(node.nodeValue ?? '')
             ? NodeFilter.FILTER_ACCEPT
             : NodeFilter.FILTER_REJECT;
         },
@@ -83,13 +195,17 @@ export default defineContentScript({
       return targets;
     }
 
-    /** Replace every standalone "AI" within `root`. */
+    /** Rewrite every hype term within `root`; tally the swaps. */
     function replaceIn(root: Node): void {
       if (root.nodeType === Node.TEXT_NODE) {
-        replaceTextInNode(root as Text);
+        noteReplacements(replaceTextInNode(root as Text));
         return;
       }
-      for (const textNode of collectTextNodes(root)) replaceTextInNode(textNode);
+      let delta = 0;
+      for (const textNode of collectTextNodes(root)) {
+        delta += replaceTextInNode(textNode);
+      }
+      if (delta > 0) noteReplacements(delta);
     }
 
     /** Watch for content added/changed after the initial pass (SPAs, etc.). */
@@ -103,7 +219,7 @@ export default defineContentScript({
               target.parentElement &&
               !isSkippable(target.parentElement)
             ) {
-              replaceTextInNode(target);
+              noteReplacements(replaceTextInNode(target));
             }
             continue;
           }

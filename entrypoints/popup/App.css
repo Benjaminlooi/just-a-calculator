@@ -16,9 +16,54 @@
 }
 
 .subtitle {
-  margin: 0 0 10px;
+  margin: 0 0 14px;
   font-size: 0.95em;
   line-height: 1.45;
+}
+
+/* Hype-removed tally. */
+.counter {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+.counter-num {
+  font-size: 1.7em;
+  font-weight: 700;
+  line-height: 1;
+  color: #1f2937;
+  font-variant-numeric: tabular-nums;
+}
+
+.counter-label {
+  font-size: 0.78em;
+  color: #6b7280;
+  text-transform: lowercase;
+}
+
+/* Example rewrite list. */
+.examples {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  font-size: 0.85em;
+  text-align: left;
+}
+
+.examples li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.examples li .arrow {
+  font-size: 0.85em;
 }
 
 .from {
@@ -31,8 +76,27 @@
   font-weight: 600;
 }
 
-.hint {
-  margin: 0;
+/* Fake testimonial. */
+.quote {
+  margin: 0 0 12px;
+  padding: 0 6px;
   font-size: 0.85em;
-  color: #888;
+  font-style: italic;
+  color: #4b5563;
+  line-height: 1.45;
+}
+
+.quote cite {
+  display: block;
+  margin-top: 4px;
+  font-style: normal;
+  font-size: 0.85em;
+  color: #9ca3af;
+}
+
+.footer {
+  margin: 0;
+  font-size: 0.72em;
+  color: #9ca3af;
+  line-height: 1.4;
 }

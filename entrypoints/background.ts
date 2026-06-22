@@ -1,3 +1,3 @@
 export default defineBackground(() => {
-  console.log('Hello background!', { id: browser.runtime.id });
+  console.log('beep boop. i am definitely not an AI. i am a calculator.');
 });

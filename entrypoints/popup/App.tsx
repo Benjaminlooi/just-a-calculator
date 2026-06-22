@@ -1,18 +1,73 @@
 import './App.css';
 
+// Key must match the one in content.ts.
+const HYPE_KEY = 'local:hypeRemoved';
+
+// A few example rewrites shown in the popup so the gag is self-explanatory
+// without the visitor having to refresh a page first.
+const EXAMPLES: Array<[string, string]> = [
+  ['AI', 'Calculator'],
+  ['ChatGPT', 'Chat Calc'],
+  ['AGI', 'Artificial General Calculator'],
+  ['LLM', 'Large Lossy Multiplication'],
+  ['machine learning', 'memorizing'],
+  ['neural network', 'tangled wire'],
+  ['hallucination', 'feature'],
+  ['prompt engineer', 'wish-maker'],
+];
+
 function App() {
+  const [count, setCount] = useState<number | null>(null);
+
+  // Read the running tally once, then watch storage so the number ticks up
+  // live while the popup is open.
+  useEffect(() => {
+    storage.getItem<number>(HYPE_KEY, { fallback: 0 }).then((v) => setCount(v));
+    const unwatch = storage.watch<number>(HYPE_KEY, (v) => setCount(v ?? 0));
+    return unwatch;
+  }, []);
+
   return (
     <div className="popup">
       <h1 className="title">
         AI <span className="arrow">→</span> Calculator
       </h1>
+
       <p className="subtitle">
-        Every instance of <code className="from">AI</code>,{' '}
-        <code className="from">ai</code>, or <code className="from">A.I</code>{' '}
-        on a page is rewritten to <code className="to">Calculator</code>,
-        matching the original casing.
+        Every instance of <code className="from">AI</code> on a page is rewritten
+        to <code className="to">Calculator</code>, along with a few of its
+        friends.
       </p>
-      <p className="hint">It runs automatically on every site you visit.</p>
+
+      <div className="counter">
+        <span className="counter-num">
+          {count === null ? '—' : count.toLocaleString()}
+        </span>
+        <span className="counter-label">
+          hype {count === 1 ? 'term' : 'terms'} removed
+        </span>
+      </div>
+
+      <ul className="examples">
+        {EXAMPLES.map(([from, to]) => (
+          <li key={from}>
+            <code className="from">{from}</code>
+            <span className="arrow">→</span>
+            <code className="to">{to}</code>
+          </li>
+        ))}
+      </ul>
+
+      <blockquote className="quote">
+        “I used to be surrounded by AI startups. Now I’m surrounded by
+        calculators. Much better.”
+        <cite>— a satisfied user</cite>
+      </blockquote>
+
+      <p className="footer">
+        Powered by Calculator™. No AIs were harmed in the making of this
+        extension — there were never any AIs.
+      </p>
     </div>
   );
 }

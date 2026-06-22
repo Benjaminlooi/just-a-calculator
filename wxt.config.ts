@@ -7,5 +7,6 @@ export default defineConfig({
     name: 'Just a Calculator',
     description:
       'Replaces every instance of the word "AI" with "Calculator" on every page.',
+    permissions: ['storage'],
   },
 });
