@@ -3,6 +3,11 @@ export default defineContentScript({
   matches: ['<all_urls>'],
   runAt: 'document_idle',
   main() {
+    // Never run on the extension's own pages (the popup, options, etc.). On
+    // some browsers `<all_urls>` matches these too, which would rewrite the
+    // popup's own copy ("AI -> Calculator" -> "Calculator -> Calculator").
+    if (location.protocol.endsWith('-extension:')) return;
+
     // Elements whose text we must not touch: editing fields, embedded
     // code/data, and scripting/invisible elements where swapping text would
     // break behaviour or simply never be seen.
