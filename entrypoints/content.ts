@@ -25,18 +25,26 @@ export default defineContentScript({
       'META',
     ]);
 
-    // Standalone "AI" with word boundaries, case-insensitive. Using word
-    // boundaries keeps us from matching the "ai" inside "rain", "main",
-    // "available", etc. Two regexes: one without /g for cheap membership
-    // tests (stateless), one with /g for the actual replacement.
-    const HAS_AI = /\bAI\b/i;
-    const AI_GLOBAL = /\bAI\b/gi;
+    // "AI" in any casing, with an optional dot between the letters so common
+    // abbreviations like "A.I", "A.I.", "a.i" are caught too. Word boundaries
+    // keep us from matching the "ai" inside "rain", "main", "available", etc.
+    // The negative lookahead `(?!\.[A-Za-z])` stops us from grabbing the "A.I"
+    // that begins a longer dotted acronym such as "A.I.D.S", and also leaves a
+    // trailing sentence period alone ("A.I." -> "Calculator."). Two regexes:
+    // one without /g for cheap membership tests (stateless), one with /g for
+    // the actual replacement.
+    const HAS_AI = /\bA\.?I\b(?!\.[A-Za-z])/i;
+    const AI_GLOBAL = /\bA\.?I\b(?!\.[A-Za-z])/gi;
 
-    /** Map the matched casing onto the replacement. */
+    /**
+     * Map the matched casing onto the replacement:
+     * - both letters lowercase ("ai", "a.i") -> "calculator"
+     * - any uppercase ("AI", "Ai", "A.I", ...) -> "Calculator"
+     * Dots are dropped; "Calculator" is a word, not an acronym.
+     */
     function replacementFor(match: string): string {
-      if (match === 'ai') return 'calculator';
-      // "AI", "Ai", and any odd case (e.g. "aI") -> capitalized form.
-      return 'Calculator';
+      const letters = match.replace(/\./g, '');
+      return letters === letters.toLowerCase() ? 'calculator' : 'Calculator';
     }
 
     /** True if the element (or an ancestor) is a place we shouldn't edit. */

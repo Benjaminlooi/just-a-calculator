@@ -6,7 +6,7 @@ Built with [WXT](https://wxt.dev) + React.
 
 ## How it works
 
-The content script walks each page's text nodes (skipping `<script>`, `<style>`, form fields, and other places where editing text would break things) and rewrites any standalone `AI` → `Calculator`, respecting word boundaries so words like “rain” or “available” are left alone. A `MutationObserver` handles content loaded later (SPAs, infinite scroll).
+The content script walks each page's text nodes (skipping `<script>`, `<style>`, form fields, and other places where editing text would break things) and rewrites any standalone `AI` → `Calculator`, including dotted abbreviations like `A.I`, `A.I.`, and `a.i`. Casing is preserved (`ai`/`a.i` → `calculator`, everything else → `Calculator`), and word boundaries keep words like “rain” or “available” untouched. A `MutationObserver` handles content loaded later (SPAs, infinite scroll).
 
 ## Develop
 

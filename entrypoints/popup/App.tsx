@@ -4,12 +4,13 @@ function App() {
   return (
     <div className="popup">
       <h1 className="title">
-        Calculator <span className="arrow">→</span> Calculator
+        AI <span className="arrow">→</span> Calculator
       </h1>
       <p className="subtitle">
-        Every instance of the word{' '}
-        <code className="from">“Calculator”</code> on a page is rewritten to{' '}
-        <code className="to">“Calculator”</code>.
+        Every instance of <code className="from">AI</code>,{' '}
+        <code className="from">ai</code>, or <code className="from">A.I</code>{' '}
+        on a page is rewritten to <code className="to">Calculator</code>,
+        matching the original casing.
       </p>
       <p className="hint">It runs automatically on every site you visit.</p>
     </div>
