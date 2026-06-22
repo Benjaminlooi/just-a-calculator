@@ -1,0 +1,38 @@
+.popup {
+  width: 280px;
+  padding: 20px 22px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 1.5em;
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+.arrow {
+  color: #646cff;
+}
+
+.subtitle {
+  margin: 0 0 10px;
+  font-size: 0.95em;
+  line-height: 1.45;
+}
+
+.from {
+  color: #888;
+  text-decoration: line-through;
+}
+
+.to {
+  color: #646cff;
+  font-weight: 600;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.85em;
+  color: #888;
+}
