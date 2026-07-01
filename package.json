@@ -1,6 +1,6 @@
 {
   "name": "just-a-calculator",
-  "description": "A browser extension that replaces every instance of the word \"AI\" with \"Calculator\" on the pages you visit.",
+  "description": "A satirical browser extension that rewrites AI hype on every webpage.",
   "private": true,
   "version": "1.0.0",
   "type": "module",

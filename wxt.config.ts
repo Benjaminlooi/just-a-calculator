@@ -9,7 +9,7 @@ export default defineConfig({
   manifest: {
     name: 'Just a Calculator',
     description:
-      'Replaces every instance of the word "AI" with "Calculator" on every page.',
+      'Replaces AI hype on every page. "AI" becomes "Calculator." "Machine learning" becomes "memorizing." You get the idea.',
     permissions: ['storage'],
     browser_specific_settings: {
       gecko: {

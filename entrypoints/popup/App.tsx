@@ -7,13 +7,19 @@ const HYPE_KEY = 'local:hypeRemoved';
 // without the visitor having to refresh a page first.
 const EXAMPLES: Array<[string, string]> = [
   ['AI', 'Calculator'],
+  ['artificial intelligence', 'Artificial Calculator'],
   ['ChatGPT', 'Chat Calc'],
   ['AGI', 'Artificial General Calculator'],
   ['LLM', 'Large Lossy Multiplication'],
+  ['GPT', 'General Purpose Toaster'],
+  ['AI-powered', 'Calculator-powered'],
   ['machine learning', 'memorizing'],
+  ['deep learning', 'deep guessing'],
   ['neural network', 'tangled wire'],
   ['hallucination', 'feature'],
   ['prompt engineer', 'wish-maker'],
+  ['generative', 'Hallucinating'],
+  ['deepfake', 'deep forgery'],
 ];
 
 function App() {
@@ -34,9 +40,7 @@ function App() {
       </h1>
 
       <p className="subtitle">
-        Every instance of <code className="from">AI</code> on a page is rewritten
-        to <code className="to">Calculator</code>, along with a few of its
-        friends.
+        Every AI buzzword on the page, rewritten. Permanently.
       </p>
 
       <div className="counter">
@@ -61,12 +65,12 @@ function App() {
       <blockquote className="quote">
         “I used to be surrounded by AI startups. Now I’m surrounded by
         calculators. Much better.”
-        <cite>— a satisfied user</cite>
+        <cite>— definitely not a calculator</cite>
       </blockquote>
 
       <p className="footer">
-        Powered by Calculator™. No AIs were harmed in the making of this
-        extension — there were never any AIs.
+        No AIs were harmed in the making of this extension — there were never
+        any AIs.
       </p>
     </div>
   );

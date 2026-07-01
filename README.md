@@ -4,42 +4,41 @@
 
 A browser extension that replaces every instance of the word **"AI"** — and a few of its friends — with **"Calculator"** (or a suitably deflating alternative) on the pages you visit. Because that's what they all are, when you get right down to it.
 
-Built with [WXT](https://wxt.dev) + React.
+## Install
 
-## What it actually does
+- [Chrome Web Store](#)
+- [Firefox Add-ons](#)
 
-The content script walks each page's text nodes (skipping `<script>`, `<style>`, form fields, and other places where editing text would break things) and rewrites hype terms. Word boundaries keep innocent words like "rain" or "available" untouched, and casing is preserved. A `MutationObserver` handles content loaded later (SPAs, infinite scroll).
+## What it does
 
-A sample of the dictionary:
+Every AI buzzword on the page gets rewritten. Permanently.
 
-| Before         | After                            |
-| -------------- | -------------------------------- |
-| `AI`           | `Calculator`                     |
-| `ChatGPT`      | `Chat Calc`                      |
-| `AGI`          | `Artificial General Calculator`  |
-| `LLM`          | `Large Lossy Multiplication`     |
-| `machine learning` | `memorizing`                 |
-| `neural network`   | `tangled wire`               |
-| `hallucination`    | `feature`                    |
-| `prompt engineer`  | `wish-maker`                 |
+| Before                 | After                            |
+| ---------------------- | -------------------------------- |
+| `AI`                   | `Calculator`                     |
+| `artificial intelligence` | `Artificial Calculator`       |
+| `ChatGPT`              | `Chat Calc`                      |
+| `AGI`                  | `Artificial General Calculator`  |
+| `LLM`                  | `Large Lossy Multiplication`     |
+| `GPT`                  | `General Purpose Toaster`        |
+| `AI-powered`           | `Calculator-powered`             |
+| `machine learning`     | `memorizing`                     |
+| `deep learning`        | `deep guessing`                  |
+| `neural network`       | `tangled wire`                   |
+| `hallucination`        | `feature`                        |
+| `prompt engineer`      | `wish-maker`                     |
+| `generative`           | `Hallucinating`                  |
+| `deepfake`             | `deep forgery`                   |
+
+Casing is preserved, word boundaries are respected, and a `MutationObserver` catches content loaded after the initial page render (SPAs, infinite scroll, etc.).
 
 The popup keeps a running tally — "hype terms removed" — that ticks up live as you browse.
 
-## Trusted by
+## How it works
 
-The world's leading calculator-first organizations _(logos pending)_:
+The content script walks each page's text nodes (skipping `<script>`, `<style>`, form fields, and other places where editing text would break things) and applies regex-based replacements. The tally is batched in memory and flushed to `storage.local` every 1.5 seconds.
 
-- **CalcHub** — _"Addition at scale."_
-- **CloudMathly** — _"Subtraction, but in the cloud."_
-- **OpenDivider** — _"Open-source long division."_
-- **CalcGPT** — _Wait, no, that one got rewritten too._
-
-## Performance
-
-- Replaces up to **0 AI models** per second.
-- Scales horizontally to **0 instances**.
-- Inference latency: **also 0** — there is no inference.
-- Carbon footprint: a calculator's.
+Asks for exactly one permission: `storage`. No network access, no tabs, no tracking.
 
 ## FAQ (Frequently Asked Calculations)
 
@@ -61,16 +60,16 @@ A: No. But it will make reading about it funnier.
 ## Develop
 
 ```bash
-npm install
-npm run dev          # Chrome
-npm run dev:firefox  # Firefox
+pnpm install
+pnpm dev          # Chrome
+pnpm dev:firefox  # Firefox
 ```
 
 ## Build
 
 ```bash
-npm run build          # Chrome
-npm run build:firefox  # Firefox
+pnpm build          # Chrome
+pnpm build:firefox  # Firefox
 ```
 
 ---

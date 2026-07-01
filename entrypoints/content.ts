@@ -37,6 +37,13 @@ const RULES: Rule[] = [
     replace: titled('calculator', 'Calculator'),
   },
   {
+    // Full phrase — word boundaries keep it from matching inside "artificial"
+    // alone, but we list it early for clarity.
+    has: /\bartificial\s+intelligence\b/i,
+    global: /\bartificial\s+intelligence\b/gi,
+    replace: titled('artificial calculator', 'Artificial Calculator'),
+  },
+  {
     has: /\bchat\s?gpt\b/i,
     global: /\bchat\s?gpt\b/gi,
     replace: titled('chat calc', 'Chat Calc'),
@@ -58,6 +65,13 @@ const RULES: Rule[] = [
     has: /\bgpt\b/i,
     global: /\bgpt\b/gi,
     replace: titled('general purpose toaster', 'General Purpose Toaster'),
+  },
+  {
+    // Hyphenated compound — catch "AI-powered" / "AI powered" before standalone
+    // AI gets replaced.
+    has: /\bA\.?I[\s-]+powered\b/i,
+    global: /\bA\.?I[\s-]+powered\b/gi,
+    replace: titled('calculator-powered', 'Calculator-powered'),
   },
   {
     has: /\bmachine\s+learning\b/i,
@@ -93,6 +107,11 @@ const RULES: Rule[] = [
     has: /\bgenerative\b/i,
     global: /\bgenerative\b/gi,
     replace: titled('hallucinating', 'Hallucinating'),
+  },
+  {
+    has: /\bdeep\s?fake(?:s)?\b/i,
+    global: /\bdeep\s?fake(?:s)?\b/gi,
+    replace: (m) => (/s\b/i.test(m) ? 'deep forgeries' : 'deep forgery'),
   },
 ];
 
