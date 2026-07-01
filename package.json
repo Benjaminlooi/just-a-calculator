@@ -2,7 +2,7 @@
   "name": "just-a-calculator",
   "description": "A browser extension that replaces every instance of the word \"AI\" with \"Calculator\" on the pages you visit.",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",
