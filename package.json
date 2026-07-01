@@ -3,6 +3,7 @@
   "description": "A satirical browser extension that rewrites AI hype on every webpage.",
   "private": true,
   "version": "1.0.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "wxt",
