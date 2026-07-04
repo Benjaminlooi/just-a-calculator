@@ -24,3 +24,10 @@ web-ext.config.ts
 *.njsproj
 *.sln
 *.sw?
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+

@@ -1,102 +1,172 @@
 .popup {
-  width: 280px;
-  padding: 20px 22px;
-  text-align: center;
-  box-sizing: border-box;
+  width: 320px;
+  padding: 20px;
 }
 
-.title {
-  font-size: 1.5em;
-  margin: 0 0 12px;
-  line-height: 1.2;
+/* ── Header ─────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
-.arrow {
-  color: #646cff;
+.header-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  color: var(--accent);
 }
 
-.subtitle {
-  margin: 0 0 14px;
-  font-size: 0.95em;
-  line-height: 1.45;
-}
-
-/* Hype-removed tally. */
-.counter {
+.header-text {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin: 0 0 14px;
-  padding: 10px 12px;
-  background: #f3f4f6;
-  border-radius: 8px;
+  min-width: 0;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.arrow {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.subtitle {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ── Counter card ───────────────────────────── */
+
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 20px 16px;
+  margin-bottom: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.counter:hover {
+  background: var(--bg-card-hover);
 }
 
 .counter-num {
-  font-size: 1.7em;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 2.5rem;
   font-weight: 700;
   line-height: 1;
-  color: #1f2937;
+  color: var(--counter-num);
   font-variant-numeric: tabular-nums;
 }
 
 .counter-label {
-  font-size: 0.78em;
-  color: #6b7280;
-  text-transform: lowercase;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Example rewrite list. */
+/* ── Examples list ──────────────────────────── */
+
 .examples {
-  list-style: none;
-  margin: 0 0 14px;
-  padding: 0;
-  font-size: 0.85em;
-  text-align: left;
+  margin-bottom: 16px;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.examples::-webkit-scrollbar {
+  width: 4px;
+}
+
+.examples::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.examples::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
 }
 
 .examples li {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  padding: 3px 0;
+  padding: 6px 10px;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  transition: background-color 150ms ease;
 }
 
-.examples li .arrow {
-  font-size: 0.85em;
+.examples li:nth-child(even) {
+  background: var(--bg-row-alt);
+}
+
+.examples li:hover {
+  background: var(--bg-card-hover);
+}
+
+.examples .arrow {
+  flex-shrink: 0;
+  font-size: 0.75em;
 }
 
 .from {
-  color: #888;
+  color: var(--strikethrough);
   text-decoration: line-through;
+  text-decoration-color: var(--text-faint);
+  flex: 1;
+  min-width: 0;
 }
 
 .to {
-  color: #646cff;
+  color: var(--accent);
   font-weight: 600;
+  flex: 1;
+  min-width: 0;
 }
 
-/* Fake testimonial. */
+/* ── Quote ──────────────────────────────────── */
+
 .quote {
-  margin: 0 0 12px;
-  padding: 0 6px;
-  font-size: 0.85em;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  font-size: 0.8125rem;
   font-style: italic;
-  color: #4b5563;
-  line-height: 1.45;
+  color: var(--text-muted);
+  line-height: 1.5;
+  border-left: 2px solid var(--accent);
+  background: var(--accent-dim);
+  border-radius: 0 6px 6px 0;
 }
 
 .quote cite {
   display: block;
-  margin-top: 4px;
+  margin-top: 6px;
   font-style: normal;
-  font-size: 0.85em;
-  color: #9ca3af;
+  font-size: 0.75rem;
+  color: var(--text-faint);
 }
 
+/* ── Footer ─────────────────────────────────── */
+
 .footer {
-  margin: 0;
-  font-size: 0.72em;
-  color: #9ca3af;
-  line-height: 1.4;
+  font-size: 0.6875rem;
+  color: var(--text-faint);
+  line-height: 1.5;
+  text-align: center;
 }

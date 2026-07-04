@@ -22,11 +22,35 @@ const EXAMPLES: Array<[string, string]> = [
   ['deepfake', 'deep forgery'],
 ];
 
+function CalcIcon() {
+  return (
+    <svg
+      className="header-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="4" y="2" width="16" height="20" rx="2" />
+      <line x1="8" y1="6" x2="16" y2="6" />
+      <line x1="8" y1="10" x2="8" y2="10.01" />
+      <line x1="12" y1="10" x2="12" y2="10.01" />
+      <line x1="16" y1="10" x2="16" y2="10.01" />
+      <line x1="8" y1="14" x2="8" y2="14.01" />
+      <line x1="12" y1="14" x2="12" y2="14.01" />
+      <line x1="16" y1="14" x2="16" y2="14.01" />
+      <line x1="8" y1="18" x2="8" y2="18.01" />
+      <line x1="12" y1="18" x2="12" y2="18.01" />
+      <line x1="16" y1="18" x2="16" y2="18.01" />
+    </svg>
+  );
+}
+
 function App() {
   const [count, setCount] = useState<number | null>(null);
 
-  // Read the running tally once, then watch storage so the number ticks up
-  // live while the popup is open.
   useEffect(() => {
     storage.getItem<number>(HYPE_KEY, { fallback: 0 }).then((v) => setCount(v));
     const unwatch = storage.watch<number>(HYPE_KEY, (v) => setCount(v ?? 0));
@@ -35,17 +59,21 @@ function App() {
 
   return (
     <div className="popup">
-      <h1 className="title">
-        AI <span className="arrow">→</span> Calculator
-      </h1>
+      <div className="header">
+        <CalcIcon />
+        <div className="header-text">
+          <h1 className="title">
+            AI <span className="arrow">&rarr;</span> Calculator
+          </h1>
+          <p className="subtitle">
+            Every AI buzzword on the page, rewritten. Permanently.
+          </p>
+        </div>
+      </div>
 
-      <p className="subtitle">
-        Every AI buzzword on the page, rewritten. Permanently.
-      </p>
-
-      <div className="counter">
+      <div className="counter" role="status" aria-live="polite">
         <span className="counter-num">
-          {count === null ? '—' : count.toLocaleString()}
+          {count === null ? '\u2014' : count.toLocaleString()}
         </span>
         <span className="counter-label">
           hype {count === 1 ? 'term' : 'terms'} removed
@@ -56,21 +84,21 @@ function App() {
         {EXAMPLES.map(([from, to]) => (
           <li key={from}>
             <code className="from">{from}</code>
-            <span className="arrow">→</span>
+            <span className="arrow">&rarr;</span>
             <code className="to">{to}</code>
           </li>
         ))}
       </ul>
 
       <blockquote className="quote">
-        “I used to be surrounded by AI startups. Now I’m surrounded by
-        calculators. Much better.”
-        <cite>— definitely not a calculator</cite>
+        &ldquo;I used to be surrounded by AI startups. Now I&rsquo;m surrounded
+        by calculators. Much better.&rdquo;
+        <cite>&mdash; definitely not a calculator</cite>
       </blockquote>
 
       <p className="footer">
-        No AIs were harmed in the making of this extension — there were never
-        any AIs.
+        No AIs were harmed in the making of this extension &mdash; there were
+        never any AIs.
       </p>
     </div>
   );
