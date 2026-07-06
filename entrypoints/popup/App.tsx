@@ -52,51 +52,86 @@ function CalcIcon() {
 
 function App() {
   const [count, setCount] = useState<number | null>(null);
+  const [isEnabled, setIsEnabled] = useState<boolean>(true);
 
   useEffect(() => {
     storage.getItem<number>(HYPE_KEY, { fallback: 0 }).then((v) => setCount(v));
-    const unwatch = storage.watch<number>(HYPE_KEY, (v) => setCount(v ?? 0));
-    return unwatch;
+    const unwatchCount = storage.watch<number>(HYPE_KEY, (v) => setCount(v ?? 0));
+
+    storage.getItem<boolean>('local:isEnabled', { fallback: true }).then((v) => setIsEnabled(v));
+    const unwatchEnabled = storage.watch<boolean>('local:isEnabled', (v) => setIsEnabled(v ?? true));
+
+    return () => {
+      unwatchCount();
+      unwatchEnabled();
+    };
   }, []);
+
+  const handleToggle = async () => {
+    const nextState = !isEnabled;
+    setIsEnabled(nextState);
+    await storage.setItem('local:isEnabled', nextState);
+  };
 
   return (
     <div className="popup">
       <div className="header">
-        <CalcIcon />
-        <div className="header-text">
-          <h1 className="title">
-            AI <span className="arrow">&rarr;</span> Calculator
-          </h1>
-          <p className="subtitle">
-            Every AI buzzword on the page, rewritten. Permanently.
-          </p>
+        <div className="header-container">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <CalcIcon />
+            <div className="header-text">
+              <h1 className="title">
+                AI <span className="arrow">&rarr;</span> Calculator
+              </h1>
+              <p className="subtitle">
+                Every AI buzzword on the page, rewritten. Permanently.
+              </p>
+            </div>
+          </div>
+          <button
+            role="switch"
+            aria-checked={isEnabled}
+            className={`toggle-switch ${isEnabled ? 'active' : ''}`}
+            onClick={handleToggle}
+            aria-label="Toggle extension functionality"
+          >
+            <span className="toggle-knob" />
+          </button>
         </div>
       </div>
 
-      <div className="counter" role="status" aria-live="polite" aria-busy={count === null}>
-        <span className="counter-num">
-          {count === null ? '\u2014' : count.toLocaleString()}
-        </span>
-        <span className="counter-label">
-          hype {count === 1 ? 'term' : 'terms'} removed
-        </span>
+      {!isEnabled && (
+        <div className="reload-notice" role="status">
+          Extension disabled. Refresh pages to restore AI terms.
+        </div>
+      )}
+
+      <div className={isEnabled ? '' : 'disabled-container'}>
+        <div className="counter" role="status" aria-live="polite" aria-busy={count === null}>
+          <span className="counter-num">
+            {count === null ? '\u2014' : count.toLocaleString()}
+          </span>
+          <span className="counter-label">
+            hype {count === 1 ? 'term' : 'terms'} removed
+          </span>
+        </div>
+
+        <ul className="examples" aria-label="Example term rewrites">
+          {EXAMPLES.map(([from, to]) => (
+            <li key={from}>
+              <code className="from">{from}</code>
+              <span className="arrow">&rarr;</span>
+              <code className="to">{to}</code>
+            </li>
+          ))}
+        </ul>
+
+        <blockquote className="quote">
+          &ldquo;I used to be surrounded by AI startups. Now I&rsquo;m surrounded
+          by calculators. Much better.&rdquo;
+          <cite>&mdash; definitely not a calculator</cite>
+        </blockquote>
       </div>
-
-      <ul className="examples" aria-label="Example term rewrites">
-        {EXAMPLES.map(([from, to]) => (
-          <li key={from}>
-            <code className="from">{from}</code>
-            <span className="arrow">&rarr;</span>
-            <code className="to">{to}</code>
-          </li>
-        ))}
-      </ul>
-
-      <blockquote className="quote">
-        &ldquo;I used to be surrounded by AI startups. Now I&rsquo;m surrounded
-        by calculators. Much better.&rdquo;
-        <cite>&mdash; definitely not a calculator</cite>
-      </blockquote>
 
       <p className="footer">
         No AIs were harmed in the making of this extension &mdash; there were
