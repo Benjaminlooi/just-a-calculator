@@ -32,6 +32,8 @@ function CalcIcon() {
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
+      role="img"
+      aria-label="Calculator icon"
     >
       <rect x="4" y="2" width="16" height="20" rx="2" />
       <line x1="8" y1="6" x2="16" y2="6" />
@@ -71,7 +73,7 @@ function App() {
         </div>
       </div>
 
-      <div className="counter" role="status" aria-live="polite">
+      <div className="counter" role="status" aria-live="polite" aria-busy={count === null}>
         <span className="counter-num">
           {count === null ? '\u2014' : count.toLocaleString()}
         </span>
@@ -80,7 +82,7 @@ function App() {
         </span>
       </div>
 
-      <ul className="examples">
+      <ul className="examples" aria-label="Example term rewrites">
         {EXAMPLES.map(([from, to]) => (
           <li key={from}>
             <code className="from">{from}</code>
