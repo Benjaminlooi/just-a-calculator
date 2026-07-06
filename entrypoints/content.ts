@@ -265,10 +265,13 @@ export default defineContentScript({
       startObserver();
     }
 
-    if (document.body) {
-      run();
-    } else {
-      document.addEventListener('DOMContentLoaded', run, { once: true });
-    }
+    void storage.getItem<boolean>('local:isEnabled', { fallback: true }).then((isEnabled) => {
+      if (!isEnabled) return;
+      if (document.body) {
+        run();
+      } else {
+        document.addEventListener('DOMContentLoaded', run, { once: true });
+      }
+    });
   },
 });
