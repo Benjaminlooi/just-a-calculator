@@ -2,6 +2,7 @@ import './App.css';
 
 // Key must match the one in content.ts.
 const HYPE_KEY = 'local:hypeRemoved';
+const ENABLED_KEY = 'local:isEnabled';
 
 // A few example rewrites shown in the popup so the gag is self-explanatory
 // without the visitor having to refresh a page first.
@@ -58,8 +59,8 @@ function App() {
     storage.getItem<number>(HYPE_KEY, { fallback: 0 }).then((v) => setCount(v));
     const unwatchCount = storage.watch<number>(HYPE_KEY, (v) => setCount(v ?? 0));
 
-    storage.getItem<boolean>('local:isEnabled', { fallback: true }).then((v) => setIsEnabled(v));
-    const unwatchEnabled = storage.watch<boolean>('local:isEnabled', (v) => setIsEnabled(v ?? true));
+    storage.getItem<boolean>(ENABLED_KEY, { fallback: true }).then((v) => setIsEnabled(v));
+    const unwatchEnabled = storage.watch<boolean>(ENABLED_KEY, (v) => setIsEnabled(v ?? true));
 
     return () => {
       unwatchCount();
@@ -70,14 +71,14 @@ function App() {
   const handleToggle = async () => {
     const nextState = !isEnabled;
     setIsEnabled(nextState);
-    await storage.setItem('local:isEnabled', nextState);
+    await storage.setItem(ENABLED_KEY, nextState);
   };
 
   return (
     <div className="popup">
       <div className="header">
         <div className="header-container">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="header-brand">
             <CalcIcon />
             <div className="header-text">
               <h1 className="title">

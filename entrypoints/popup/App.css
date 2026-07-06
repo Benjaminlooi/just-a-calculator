@@ -12,6 +12,12 @@
   margin-bottom: 16px;
 }
 
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .header-icon {
   flex-shrink: 0;
   width: 28px;

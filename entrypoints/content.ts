@@ -2,6 +2,7 @@
 // increments it; the popup reads (and watches) it. Lives in local storage so
 // each browser profile keeps its own scoreboard.
 const HYPE_KEY = 'local:hypeRemoved';
+const ENABLED_KEY = 'local:isEnabled';
 
 // A single replacement rule. `has` is a cheap, stateless test used to decide
 // whether a text node is even worth opening; `global` does the real work; and
@@ -265,7 +266,7 @@ export default defineContentScript({
       startObserver();
     }
 
-    void storage.getItem<boolean>('local:isEnabled', { fallback: true }).then((isEnabled) => {
+    void storage.getItem<boolean>(ENABLED_KEY, { fallback: true }).then((isEnabled) => {
       if (!isEnabled) return;
       if (document.body) {
         run();
